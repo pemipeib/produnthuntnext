@@ -1,9 +1,10 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import Buscar from "../ui/Buscar";
 import Navegacion from "./Navegacion";
 import Link from "next/link";
 import styled from "@emotion/styled";
 import {css} from "@emotion/core";
+import Boton from "../ui/Boton";
 
 const ContebedorHeader = styled.div`
   max-width: 1200px;
@@ -26,6 +27,9 @@ const Logo = styled.p`
 `;
 
 const Header = () => {
+    
+    const usuario = false;
+    
     return (
         <header
             css={css`
@@ -33,18 +37,45 @@ const Header = () => {
               padding: 1rem 0;
             `}>
             <ContebedorHeader>
-                <div>
+                <div
+                    css={css`
+                        display: flex;
+                        align-items: center;
+                    `}
+                >
                     <Link href="/">
                         <Logo>P</Logo>
                     </Link>
                 <Buscar/>
                 <Navegacion/>
                 </div>
-                <div>
-                    <p>Hola: Pedro</p>
-                    <button type="button">Cerrar sesión</button>
-                    <Link href="/">Login</Link>
-                    <Link href="/">Crear cuenta</Link>
+                <div
+                    css={css`
+                        display: flex;
+                        align-items: center;
+                    `}
+                >
+                    {usuario
+                        ? (
+                            <Fragment>
+                                <p
+                                    css={css`
+                                margin-right: 2rem;
+                                `}
+                                >Hola: Pedro</p>
+                                <Boton type="button" bgColor="true">Cerrar sesión</Boton>
+                            </Fragment>
+                        ) : (
+                            <Fragment>
+                                <Link href="/">
+                                    <Boton bgColor="true">Login</Boton>
+                                </Link>
+                                <Link href="/">
+                                    <Boton>Crear cuenta</Boton>
+                                </Link>
+                        </Fragment>
+                    )}
+                    
                 </div>
             </ContebedorHeader>
         </header>
