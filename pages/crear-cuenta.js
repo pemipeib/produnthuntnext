@@ -1,7 +1,10 @@
-import React from 'react';
+import React,{useState} from 'react';
 import {css} from "@emotion/core";
+import Router from "next/router";
 import Layout from "../components/layout/Layout";
 import {Formulario, Campo, InputSubmit, Error} from "../components/ui/Formulario";
+
+import firebase from "../firebase";
 
 //validaciones
 import useValidation from "../hooks/useValidation";
@@ -15,6 +18,8 @@ const STATE_INICIAL = {
 
 const CrearCuenta = () => {
     
+    const [error, guardarError] = useState(false);
+    
     const {
         valores,
         errores,
@@ -25,8 +30,14 @@ const CrearCuenta = () => {
     
     const {nombre, email, password} = valores;
     
-    function crearCuenta() {
-        console.log('creando cuenta');
+    async function crearCuenta() {
+        try {
+            await firebase.registrar(nombre, email, password);
+            Router.push('/');
+        }catch (error) {
+            console.error('Hubo un error al crear el usuario', error.message);
+            guardarError(error.message);
+        }
     }
     
     return  (
@@ -36,6 +47,7 @@ const CrearCuenta = () => {
                     css={css`
                   text-align: center;
                   margin-top: 5rem;
+                  text-transform: uppercase;
                 `}
                 >Crear cuenta</h1>
                 <Formulario
@@ -51,7 +63,7 @@ const CrearCuenta = () => {
                             name="nombre"
                             value={nombre}
                             onChange={handleChange}
-                            onBlur={handleBlur}
+                            // onBlur={handleBlur}
                         />
                     </Campo>
                     {errores.nombre && <Error>{errores.nombre}</Error>}
@@ -64,7 +76,7 @@ const CrearCuenta = () => {
                             name="email"
                             value={email}
                             onChange={handleChange}
-                            onBlur={handleBlur}
+                            // onBlur={handleBlur}
                         />
                     </Campo>
                     {errores.email && <Error>{errores.email}</Error>}
@@ -77,10 +89,11 @@ const CrearCuenta = () => {
                             name="password"
                             value={password}
                             onChange={handleChange}
-                            onBlur={handleBlur}
+                            // onBlur={handleBlur}
                         />
                     </Campo>
                     {errores.password && <Error>{errores.password}</Error>}
+                    {error && <Error>{error}</Error>}
                     <InputSubmit
                         type="submit"
                         value="Crear cuenta"
