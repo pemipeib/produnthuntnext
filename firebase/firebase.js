@@ -17,6 +17,16 @@ class Firebase {
             displayName : nombre
         });
     }
+    
+    //Inicia sesion del usuario
+    async login(email, password){
+        return this.auth.signInWithEmailAndPassword(email, password);
+    }
+    
+    //Cierra la sesion del usuario
+    async cerrarSesion() {
+        await this.auth.signOut();
+    }
 }
 
 const firebase = new Firebase();
