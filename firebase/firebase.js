@@ -1,5 +1,6 @@
 import app from 'firebase/app';
-import 'firebase/auth'
+import 'firebase/auth';
+import 'firebase/firestore';
 
 import firebaseConfig from "./config";
 
@@ -9,6 +10,7 @@ class Firebase {
             app.initializeApp(firebaseConfig);
         }
         this.auth = app.auth();
+        this.db = app.firestore();
     }
     
     async registrar(nombre, email, password){
@@ -27,6 +29,7 @@ class Firebase {
     async cerrarSesion() {
         await this.auth.signOut();
     }
+    
 }
 
 const firebase = new Firebase();
