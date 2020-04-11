@@ -2,7 +2,9 @@ import React from 'react';
 import styled from "@emotion/styled";
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import {es} from 'date-fns/locale';
+import Link from "next/link";
 
+//CSS
 const Producto = styled.li`
     padding: 4rem;
     display: flex;
@@ -10,27 +12,23 @@ const Producto = styled.li`
     align-items: center;
     border-bottom: 1px solid var(--gris3);
 `;
-
 const DescripcionProducto = styled.div`
   flex: 0 1 600px;
   display: grid;
   grid-template-columns: 1fr 3fr;
   column-gap: 2rem;
 `;
-
 const Titulo = styled.a`
   font-size: 2rem;
   font-weight: bold;
   margin: 0;
   cursor: pointer;
 `;
-
 const TextoDescripcion = styled.p`
   font-size: 1.6rem;
   margin: 0;
   color: #888;
 `;
-
 const Comentarios = styled.div`
   margin-top: 2rem;
   display: flex;
@@ -56,7 +54,6 @@ const Comentarios = styled.div`
     }
   }
 `;
-
 const Votos = styled.div`
   flex: 0 0 auto;
   text-align: center;
@@ -72,7 +69,6 @@ const Votos = styled.div`
     font-weight: 700;
   }
 `;
-
 const Imagen = styled.img`
   width: 200px;
 `;
@@ -89,7 +85,9 @@ const DetallesProducto = ({producto}) => {
                     <Imagen src={urlimagen} alt=""/>
                 </div>
                 <div>
-                    <Titulo >{nombre}</Titulo>
+                    <Link href="/productos/[id]" as={`/productos/${id}`}>
+                        <Titulo >{nombre}</Titulo>
+                    </Link>
                     <TextoDescripcion>{descripcion}</TextoDescripcion>
                     <Comentarios>
                         <div>

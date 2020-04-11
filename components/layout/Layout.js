@@ -45,6 +45,10 @@ const Layout = props => {
                a{
                   text-decoration: none;
                }
+               
+               image{
+                  max-width: 100%;
+               }
               
             `}/>
 
