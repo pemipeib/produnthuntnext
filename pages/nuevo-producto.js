@@ -43,6 +43,8 @@ const NuevoProducto = () => {
     //Context con las operaciones crud de firebase
     const {usuario, firebase} = useContext(FirebaseContext);
     
+    console.log(usuario);
+    
     //Hook para redireccionar
     const router = useRouter();
     
@@ -62,7 +64,11 @@ const NuevoProducto = () => {
             descripcion,
             votos: 0,
             comentarios: [],
-            creado: Date.now()
+            creado: Date.now(),
+            creador: {
+                id: usuario.uid,
+                nombre: usuario.displayName
+            }
         };
         
         // insertarlo en la vase de datos
