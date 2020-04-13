@@ -25,14 +25,15 @@ const Producto = () => {
     const [producto, guardarProducto] = useState({});
     const [error, guardarError] = useState(false);
     
-    const { comentarios, creado, descripcion, empresa, nombre, url, urlimagen, votos, creador} = producto;
+    //context de firebase
+    const {firebase, usuario} = useContext(FirebaseContext);
+    
+    const { comentarios, creado, descripcion, empresa, nombre, url, urlimagen, votos, creador, haVotado} = producto;
     
     //Routin para obtener el id actual
     const router = useRouter();
     const {query: {id}} = router;
     
-    //context de firebase
-    const {firebase} = useContext(FirebaseContext);
     
     useEffect(() => {
         if(id){
@@ -47,11 +48,37 @@ const Producto = () => {
             };
             obtenerProducto();
         }
-    }, [id]);
+    }, [id, producto]);
     
     if(Object.keys(producto).length === 0) return 'Cargando';
     
+    //administrar botos
+    const votarProducto= () => {
+        if(!usuario) {
+            return router.push('/login');
+        }
+        
+        //Obtener y sumar votos
+        const nuevoTotal = votos + 1;
+        
+        //Verificar si ya ha votado
+        if(haVotado.includes(usuario.uid)) return;
+        
+        //Guardar el id del usuario que ha votado
+        const nuevoHaVotado = [...haVotado, usuario.uid];
+        
+        //Actualizar la bd
+        firebase.db.collection('productos').doc(id).update({
+            votos: nuevoTotal,
+            havotado: nuevoHaVotado
+        });
     
+        // Actualizar el state
+        guardarProducto({
+            ...producto,
+            votos: nuevoTotal
+        })
+    };
     
     return (
         <Layout>
@@ -71,22 +98,30 @@ const Producto = () => {
                         <div>
                             <p>Publicado hace: {formatDistanceToNow(new Date(creado), {locale: es})}</p>
                             <p>Por {creador.nombre} de {empresa}</p>
-                            <img src={urlimagen} alt=""/>
+                            <img
+                                src={urlimagen}
+                                css={css`
+                                  height: 200px;
+                            `}/>
                             <p>{descripcion}</p>
                             
-                            <h2>Comentario</h2>
-                            <form action="">
-                                <Campo>
-                                    <input
-                                        type="text"
-                                        name="mensaje"
-                                    />
-                                </Campo>
-                                <InputSubmit
-                                    type="submit"
-                                    value="Enviar comentario"
-                                />
-                            </form>
+                            {usuario && (
+                                <>
+                                    <h2>Comentario</h2>
+                                    <form action="">
+                                        <Campo>
+                                            <input
+                                                type="text"
+                                                name="mensaje"
+                                            />
+                                        </Campo>
+                                        <InputSubmit
+                                            type="submit"
+                                            value="Enviar comentario"
+                                        />
+                                    </form>
+                                </>
+                            )}
                             
                             <h2
                                 css={css`
@@ -107,17 +142,26 @@ const Producto = () => {
                                 bgColor="true"
                                 href={url}
                             >Visitar URL</Boton>
+                            
                             <div
                                 css={css`
-                                  margin-top: 5rem;
-                                `}
-                            >
+                                margin-top: 5rem;
+                            `}>
                                 <p css={css`
                                   text-align: center;
                                 `}
                                 >{votos} Votos</p>
-                                <Boton>Votar</Boton>
+                                
+                                {usuario && (
+                                    <>
+                                        <Boton
+                                            onClick={votarProducto}
+                                        >Votar</Boton>
+                                    </>
+                                )}
+                                
                             </div>
+                            
                         </aside>
                     </ContenedorProducto>
                 </div>
