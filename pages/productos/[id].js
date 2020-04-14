@@ -155,7 +155,7 @@ const Producto = () => {
     
         try {
             firebase.db.collection('productos').doc(id).delete();
-            router.push('/login');
+            router.push('/');
         
         }catch (error) {
             console.log(error);
