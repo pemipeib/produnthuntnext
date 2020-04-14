@@ -24,6 +24,7 @@ const Producto = () => {
     //state del componente
     const [producto, guardarProducto] = useState({});
     const [error, guardarError] = useState(false);
+    const [comentario, guardarComentario] = useState({});
     
     //context de firebase
     const {firebase, usuario} = useContext(FirebaseContext);
@@ -80,6 +81,39 @@ const Producto = () => {
         })
     };
     
+    //funcion para crear comentarios
+    const comnentarioChangg = e => {
+        guardarComentario({
+            ...comentario,
+            [e.target.name] : e.target.value
+        })
+    };
+    
+    const agregarComentario = e => {
+        e.preventDefault();
+        if(!usuario) {
+            return router.push('/login');
+        }
+        
+        //Informacion extra del comentario
+        comentario.usuarioId = usuario.uid;
+        comentario.usuarioNombre = usuario.displayName;
+        
+        //Copia de comentario y añadirlo al array
+        const nuevosComentarios = [...comentarios, comentario];
+        
+        //Actualizar bd
+        firebase.db.collection('productos').doc(id).update({
+            comentarios: nuevosComentarios
+        });
+        
+        //actualizar el state
+        guardarProducto({
+            ...producto,
+            comentarios: nuevosComentarios
+        });
+    };
+    
     return (
         <Layout>
             <>
@@ -108,11 +142,14 @@ const Producto = () => {
                             {usuario && (
                                 <>
                                     <h2>Comentario</h2>
-                                    <form action="">
+                                    <form
+                                        onSubmit={agregarComentario}
+                                    >
                                         <Campo>
                                             <input
                                                 type="text"
                                                 name="mensaje"
+                                                onChange={comnentarioChangg}
                                             />
                                         </Campo>
                                         <InputSubmit
@@ -128,12 +165,32 @@ const Producto = () => {
                                   margin: 2rem 0;
                                 `}
                             >Comentarios</h2>
-                            {comentarios.map(comentario => (
-                                <li>
-                                    <p>{comentario.nombre}</p>
-                                    <p>Escrito por: {comentario.usuarioNombre}</p>
-                                </li>
-                            ))}
+                            {comentarios.length === 0
+                                ? <p>Sin comentarios</p>
+                                :(
+                                    <ul>
+                                        {comentarios.map((comentario, i) => (
+                                            <li
+                                                key={`${comentario.usuarioId}-${i}`}
+                                                css={css`
+                                                  border: 1px solid var(--gris3);
+                                                  padding: 2rem;
+                                                  border-radius: 5px;
+                                                `}
+                                            >
+                                                <p>{comentario.mensaje}</p>
+                                                <p>Escrito por: {' '}
+                                                    <span
+                                                        css={css`
+                                                          font-weight: bold;
+                                                        `}
+                                                    >{comentario.usuarioNombre}</span>
+                                                </p>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )
+                            }
                             
                         </div>
                         <aside>
