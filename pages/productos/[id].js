@@ -137,6 +137,31 @@ const Producto = () => {
         guardarConsultarDB(true);
     };
     
+    //funcion para el revisar que el creador del producto sea el mismo que esta autenticado
+    const puedeBorrar = () => {
+        if (!usuario) return false;
+        
+        if (creador.id === usuario.uid) return true;
+    };
+    
+    //elimina un producto
+    const eliminarProducto = () => {
+        if(!usuario) {
+            return router.push('/');
+        }
+        if (creador.id !== usuario.uid) {
+            return router.push('/');
+        }
+    
+        try {
+            firebase.db.collection('productos').doc(id).delete();
+            router.push('/login');
+        
+        }catch (error) {
+            console.log(error);
+        }
+    }
+    
     return (
         <Layout>
             <>
@@ -243,6 +268,11 @@ const Producto = () => {
                 
                                 </aside>
                             </ContenedorProducto>
+                            {puedeBorrar() &&
+                                <Boton
+                                    onClick={eliminarProducto}
+                                >Eliminar producto</Boton>
+                            }
                         </div>
                     )
                 }
