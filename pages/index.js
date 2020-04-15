@@ -3,10 +3,9 @@ import Layout from "../components/layout/Layout";
 import DetallesProducto from "../components/layout/DetallesProducto";
 import useProductos from "../hooks/useProductos";
 
-
 const Home = () =>{
     
-    const {productos} = useProductos('creado')
+    const {productos} = useProductos('creado');
     
     return (
         <div>
